@@ -1,0 +1,187 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Space Grotesk";
+  src: url("/assets/fonts/SpaceGrotesk.woff2") format("woff2");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "DM Sans";
+  src: url("/assets/fonts/DMSans.woff2") format("woff2");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/assets/fonts/JetBrainsMono.woff2") format("woff2");
+  font-display: swap;
+}
+
+@layer base {
+  :root {
+    --font-display: "Space Grotesk";
+    --font-body: "DM Sans";
+    --font-mono: "JetBrains Mono";
+    --radius: 0.625rem;
+
+    --background: 0.97 0.008 260;
+    --foreground: 0.16 0.02 260;
+    --card: 0.995 0.004 260;
+    --card-foreground: 0.16 0.02 260;
+    --popover: 0.995 0.004 260;
+    --popover-foreground: 0.16 0.02 260;
+
+    --primary: 0.45 0.14 195;
+    --primary-foreground: 0.98 0.005 195;
+
+    --secondary: 0.93 0.012 260;
+    --secondary-foreground: 0.26 0.02 260;
+    --muted: 0.93 0.012 260;
+    --muted-foreground: 0.5 0.015 260;
+
+    --accent: 0.45 0.14 195;
+    --accent-foreground: 0.98 0.005 195;
+
+    --destructive: 0.55 0.22 25;
+    --destructive-foreground: 0.98 0.005 25;
+    --success: 0.55 0.16 150;
+    --warning: 0.7 0.15 80;
+
+    --border: 0.89 0.012 260;
+    --input: 0.89 0.012 260;
+    --ring: 0.45 0.14 195;
+
+    --chart-1: 0.55 0.16 195;
+    --chart-2: 0.55 0.16 150;
+    --chart-3: 0.7 0.15 80;
+    --chart-4: 0.55 0.22 25;
+    --chart-5: 0.5 0.1 260;
+
+    --sidebar: 0.96 0.008 260;
+    --sidebar-foreground: 0.16 0.02 260;
+    --sidebar-primary: 0.45 0.14 195;
+    --sidebar-primary-foreground: 0.98 0.005 195;
+    --sidebar-accent: 0.92 0.012 260;
+    --sidebar-accent-foreground: 0.26 0.02 260;
+    --sidebar-border: 0.88 0.012 260;
+    --sidebar-ring: 0.45 0.14 195;
+  }
+
+  .dark {
+    --background: 0.135 0.015 260;
+    --foreground: 0.94 0.012 260;
+    --card: 0.17 0.018 260;
+    --card-foreground: 0.94 0.012 260;
+    --popover: 0.19 0.02 260;
+    --popover-foreground: 0.94 0.012 260;
+
+    --primary: 0.72 0.15 195;
+    --primary-foreground: 0.13 0.02 195;
+
+    --secondary: 0.21 0.02 260;
+    --secondary-foreground: 0.85 0.012 260;
+    --muted: 0.21 0.02 260;
+    --muted-foreground: 0.56 0.012 260;
+
+    --accent: 0.72 0.15 195;
+    --accent-foreground: 0.13 0.02 195;
+
+    --destructive: 0.58 0.22 25;
+    --destructive-foreground: 0.95 0.01 25;
+    --success: 0.66 0.17 150;
+    --warning: 0.76 0.15 80;
+
+    --border: 0.26 0.02 260;
+    --input: 0.26 0.02 260;
+    --ring: 0.72 0.15 195;
+
+    --chart-1: 0.72 0.15 195;
+    --chart-2: 0.66 0.17 150;
+    --chart-3: 0.76 0.15 80;
+    --chart-4: 0.58 0.22 25;
+    --chart-5: 0.6 0.12 260;
+
+    --sidebar: 0.15 0.016 260;
+    --sidebar-foreground: 0.94 0.012 260;
+    --sidebar-primary: 0.72 0.15 195;
+    --sidebar-primary-foreground: 0.13 0.02 195;
+    --sidebar-accent: 0.21 0.02 260;
+    --sidebar-accent-foreground: 0.85 0.012 260;
+    --sidebar-border: 0.24 0.02 260;
+    --sidebar-ring: 0.72 0.15 195;
+  }
+
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+}
+
+@layer utilities {
+  .transition-smooth {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .gradient-primary {
+    background-image: linear-gradient(
+      135deg,
+      oklch(0.72 0.15 195),
+      oklch(0.6 0.12 175)
+    );
+  }
+
+  .gradient-subtle {
+    background-image: linear-gradient(
+      180deg,
+      oklch(0.17 0.018 260),
+      oklch(0.135 0.015 260)
+    );
+  }
+
+  .text-gradient {
+    background-image: linear-gradient(
+      135deg,
+      oklch(0.85 0.1 195),
+      oklch(0.72 0.15 195)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .grid-motif {
+    background-image: linear-gradient(
+        to right,
+        oklch(0.3 0.02 260 / 0.35) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom,
+        oklch(0.3 0.02 260 / 0.35) 1px,
+        transparent 1px
+      );
+    background-size: 32px 32px;
+  }
+
+  .scanline {
+    position: relative;
+  }
+  .scanline::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 3px,
+      oklch(0.94 0.012 260 / 0.03) 3px,
+      oklch(0.94 0.012 260 / 0.03) 4px
+    );
+  }
+}

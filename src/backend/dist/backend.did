@@ -1,0 +1,215 @@
+type _ImmutableObjectStorageRefillResult = 
+ record {
+   success: opt bool;
+   topped_up_amount: opt nat;
+ };
+type _ImmutableObjectStorageRefillInformation = record {
+                                                  proposed_top_up_amount:
+                                                   opt nat;};
+type _ImmutableObjectStorageCreateCertificateResult = 
+ record {
+   blob_hash: text;
+   method: text;
+ };
+type Value = 
+ variant {
+   "bool": bool;
+   float: float64;
+   "int": int;
+   "nat": nat;
+   "null";
+   "text": text;
+ };
+type UserRole = 
+ variant {
+   admin;
+   guest;
+   user;
+ };
+type User = 
+ record {
+   createdAt: int;
+   email: text;
+   name: text;
+   passwordHash: text;
+   "principal": principal;
+   status: AccountStatus;
+ };
+type Timestamp = int;
+type ShareView = 
+ record {
+   createdAt: Timestamp;
+   decryptionKey: text;
+   expiresAt: opt Timestamp;
+   fileId: FileId;
+   id: ShareId;
+   owner: principal;
+   permission: SharePermission;
+   revoked: bool;
+   shareToken: text;
+   sharedWith: principal;
+ };
+type SharePermission = 
+ variant {
+   download;
+   view;
+ };
+type ShareId = nat;
+type Result__1 = 
+ record {
+   hasMore: bool;
+   rows: vec vec Cell;
+ };
+type Result_2 = 
+ variant {
+   err: Error;
+   ok;
+ };
+type Result_1 = 
+ variant {
+   err: AuthError;
+   ok: User;
+ };
+type Result = 
+ variant {
+   err: AuthError;
+   ok;
+ };
+type FileView = 
+ record {
+   fileSize: nat;
+   id: FileId;
+   mimeType: text;
+   originalFilename: text;
+   sha256Hash: text;
+   storedFilename: text;
+   uploadedAt: int;
+ };
+type FileId = nat;
+type FailedLogin__1 = 
+ record {
+   attemptedAt: int;
+   email: text;
+   id: nat;
+   ipAddress: text;
+ };
+type FailedLogin = 
+ record {
+   attemptedAt: int;
+   email: text;
+ };
+type ExternalBlob = blob;
+type Error = 
+ variant {
+   AmbiguousAttribute: record {
+                         field: text;
+                         sources: vec text;
+                       };
+   FrontendOriginMismatch: record {
+                             expected: vec text;
+                             got: text;
+                           };
+   FrontendOriginsNotConfigured;
+   MalformedCandid;
+   MissingField: text;
+   MixedSsoSources: record {
+                      otherKeys: vec text;
+                      ssoKeys: vec text;
+                    };
+   NoAttributes;
+   Stale: record {ageNs: nat;};
+   UnknownNonce;
+   UntrustedSsoSource: record {domain: text;};
+ };
+type DownloadResult = 
+ record {
+   "blob": ExternalBlob;
+   decryptionKey: opt text;
+   sha256Hash: text;
+ };
+type Cell = 
+ record {
+   name: text;
+   value: Value;
+ };
+type AuthError = 
+ variant {
+   accountDeactivated;
+   emailTaken;
+   invalidCredentials;
+   notRegistered;
+   unauthorized;
+   weakPassword;
+ };
+type AuditLog = 
+ record {
+   action: AuditAction;
+   details: text;
+   fileId: opt nat;
+   id: nat;
+   ipAddress: text;
+   timestamp: int;
+   userId: principal;
+ };
+type AuditAction = 
+ variant {
+   delete;
+   download;
+   failedLogin;
+   linkCreate;
+   linkRevoke;
+   login;
+   logout;
+   share;
+   unauthorizedAccess;
+   upload;
+ };
+type AccountStatus = 
+ variant {
+   active;
+   deactivated;
+ };
+service : {
+  _immutableObjectStorageBlobsAreLive: (hashes: vec blob) -> (vec bool) query;
+  _immutableObjectStorageBlobsToDelete: () -> (vec blob) query;
+  _immutableObjectStorageConfirmBlobDeletion: (blobs: vec blob) -> ();
+  _immutableObjectStorageCreateCertificate: (blobHash: text) ->
+   (_ImmutableObjectStorageCreateCertificateResult);
+  _immutableObjectStorageRefillCashier: (refillInformation:
+   opt _ImmutableObjectStorageRefillInformation) ->
+   (_ImmutableObjectStorageRefillResult);
+  _immutableObjectStorageUpdateGatewayPrincipals: () -> ();
+  _initialize_access_control: () -> ();
+  _internet_identity_sign_in_finish: () -> (Result_2);
+  _internet_identity_sign_in_start: () -> (blob);
+  assignCallerUserRole: (user: principal, role: UserRole) -> ();
+  checkDownloadAccess: (shareId: ShareId) -> (bool) query;
+  createShare: (fileId: FileId, sharedWith: principal, permission:
+   SharePermission, expiresAt: opt Timestamp, decryptionKey: text) ->
+   (ShareView);
+  deleteFile: (id: FileId) -> (bool);
+  downloadFile: (id: FileId) -> (opt DownloadResult);
+  execute: (qJson: text) -> (Result__1) query;
+  getAllLogs: () -> (vec AuditLog);
+  getApiDoc: () -> (text) query;
+  getCallerUser: () -> (opt User) query;
+  getCallerUserRole: () -> (UserRole) query;
+  getFailedLogins: () -> (vec FailedLogin__1);
+  getMyActivity: () -> (vec AuditLog);
+  isCallerAdmin: () -> (bool) query;
+  listAllFiles: () -> (vec FileView) query;
+  listAllShares: () -> (vec ShareView) query;
+  listAllUsers: () -> (vec User) query;
+  listFailedLogins: () -> (vec FailedLogin) query;
+  listMyFiles: () -> (vec FileView) query;
+  listOwnerShares: () -> (vec ShareView) query;
+  listSharesForUser: () -> (vec ShareView) query;
+  login: (email: text, password: text) -> (Result_1);
+  logout: () -> ();
+  register: (name: text, email: text, password: text) -> (Result_1);
+  revokeShare: (shareId: ShareId) -> (bool);
+  schema: () -> (text) query;
+  setAccountStatus: (target: principal, status: AccountStatus) -> (Result);
+  uploadFile: (originalFilename: text, storedFilename: text, mimeType: 
+   text, fileSize: nat, sha256Hash: text, "blob": ExternalBlob) -> (FileView);
+}

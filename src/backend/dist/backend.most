@@ -1,0 +1,198 @@
+// Version: 4.0.0
+type AccountStatus__123005304 = {#active; #deactivated};
+type AccountStatus__42418189 = {#active; #deactivated};
+type AuditAction__595905663 =
+  {
+    #delete;
+    #download;
+    #failedLogin;
+    #linkCreate;
+    #linkRevoke;
+    #login;
+    #logout;
+    #share;
+    #unauthorizedAccess;
+    #upload
+  };
+type AuditAction__811820286 =
+  {
+    #delete;
+    #download;
+    #failedLogin;
+    #linkCreate;
+    #linkRevoke;
+    #login;
+    #logout;
+    #share;
+    #unauthorizedAccess;
+    #upload
+  };
+type AuditFailedLogin__520096714 =
+  {attemptedAt : Int; email : Text; id : Nat; ipAddress : Text};
+type AuditLog__1030989765 =
+  {
+    action : AuditAction__811820286;
+    details : Text;
+    fileId : ?Nat;
+    id : Nat;
+    ipAddress : Text;
+    timestamp : Int;
+    userId : Principal
+  };
+type AuditLog__476823628 =
+  {
+    action : AuditAction__595905663;
+    details : Text;
+    fileId : ?Nat;
+    id : Nat;
+    ipAddress : Text;
+    timestamp : Int;
+    userId : Principal
+  };
+type AuthFailedLogin__682358216 = {attemptedAt : Int; email : Text};
+type Data__265875254<K, V> = {var count : Nat__58649523; kvs : [var ?(K, V)]};
+type ExternalBlob__671167343 = Blob;
+type FailedLogin__75718836 =
+  {attemptedAt : Int; email : Text; id : Nat; ipAddress : Text};
+type FailedLogin__838398192 = {attemptedAt : Int; email : Text};
+type FileId__570043862 = Nat;
+type FileId__764441130 = Nat;
+type FileShare__181215983 =
+  {
+    createdAt : Int;
+    decryptionKey : Text;
+    expiresAt : ?Int;
+    fileId : Nat;
+    id : Nat;
+    owner : Principal;
+    permission : SharePermission__131443027;
+    revoked : Bool;
+    shareToken : Text;
+    sharedWith : Principal
+  };
+type FileShare__462956409 =
+  {
+    createdAt : Timestamp__888112348;
+    decryptionKey : Text;
+    expiresAt : ?Timestamp__888112348;
+    fileId : FileId__764441130;
+    id : ShareId__822990592;
+    owner : Principal;
+    permission : SharePermission__672956809;
+    revoked : Bool;
+    shareToken : Text;
+    sharedWith : Principal
+  };
+type File__685257225 =
+  {
+    blob : ExternalBlob__671167343;
+    fileSize : Nat;
+    id : FileId__570043862;
+    mimeType : Text;
+    originalFilename : Text;
+    owner : Principal;
+    sha256Hash : Text;
+    storedFilename : Text;
+    uploadedAt : Int
+  };
+type File__777061746 =
+  {
+    blob : Blob;
+    fileSize : Nat;
+    id : Nat;
+    mimeType : Text;
+    originalFilename : Text;
+    owner : Principal;
+    sha256Hash : Text;
+    storedFilename : Text;
+    uploadedAt : Int
+  };
+type Internal__161573640<K, V> =
+  {children : [var ?Node__430031793<K, V>]; data : Data__265875254<K, V>};
+type Leaf__1045638083<K, V> = {data : Data__265875254<K, V>};
+type List__1004628775<T> =
+  {
+    var blockIndex : Nat__58649523;
+    var blocks : [var [var ?T]];
+    var elementIndex : Nat__58649523
+  };
+type List__89170296<T> = List__1004628775<T>;
+type Map__13625999<K, V> =
+  {var root : Node__430031793<K, V>; var size : Nat__58649523};
+type Map__386906547<K, V> = Map__670138087<K, V>;
+type Map__670138087<K, V> = Map__13625999<K, V>;
+type Nat__58649523 = Nat__920180692;
+type Nat__920180692 = Nat;
+type NewActor__509629864 =
+  {
+    auditFailedLogins : List__89170296<AuditFailedLogin__520096714>;
+    authFailedLogins : Map__386906547<Principal, AuthFailedLogin__682358216>;
+    files : Map__386906547<Nat, File__777061746>;
+    logs : List__89170296<AuditLog__1030989765>;
+    shareState : {var nextShareId : Nat};
+    shares : Map__386906547<Nat, FileShare__181215983>;
+    users : Map__386906547<Principal, User__175197807>
+  };
+type Node__430031793<K, V> =
+  {#internal : Internal__161573640<K, V>; #leaf : Leaf__1045638083<K, V>};
+type OldActor__426030763 = {};
+type ShareId__822990592 = Nat;
+type SharePermission__131443027 = {#download; #view};
+type SharePermission__672956809 = {#download; #view};
+type Timestamp__888112348 = Int;
+type User__175197807 =
+  {
+    createdAt : Int;
+    email : Text;
+    name : Text;
+    passwordHash : Text;
+    principal : Principal;
+    status : AccountStatus__42418189
+  };
+type User__455962502 =
+  {
+    createdAt : Int;
+    email : Text;
+    name : Text;
+    passwordHash : Text;
+    principal : Principal;
+    status : AccountStatus__123005304
+  };
+{
+  "20260903_000000" : (_old : OldActor__426030763) -> NewActor__509629864
+}
+actor  {
+  stable auditFailedLogins :
+    {
+      var blockIndex : Nat__58649523;
+      var blocks : [var [var ?FailedLogin__75718836]];
+      var elementIndex : Nat__58649523
+    };
+  stable authFailedLogins :
+    {
+      var root : Node__430031793<Principal, FailedLogin__838398192>;
+      var size : Nat__58649523
+    };
+  stable files :
+    {
+      var root : Node__430031793<FileId__570043862, File__685257225>;
+      var size : Nat__58649523
+    };
+  stable logs :
+    {
+      var blockIndex : Nat__58649523;
+      var blocks : [var [var ?AuditLog__476823628]];
+      var elementIndex : Nat__58649523
+    };
+  stable shareState : {var nextShareId : Nat};
+  stable shares :
+    {
+      var root : Node__430031793<ShareId__822990592, FileShare__462956409>;
+      var size : Nat__58649523
+    };
+  stable users :
+    {
+      var root : Node__430031793<Principal, User__455962502>;
+      var size : Nat__58649523
+    }
+};

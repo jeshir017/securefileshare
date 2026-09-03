@@ -1,0 +1,19 @@
+{
+  "overview": "A secure web-based file sharing application where registered users upload, store, share, and download files encrypted with AES-256, with role-based access control, expiring share links, file integrity verification, and full audit logging.",
+  "features": [
+    "Register, sign in, and sign out with role-based access",
+    "Upload files encrypted with AES-256-GCM in the browser",
+    "Share files via expiring secure links with view/download permissions",
+    "Verify file integrity with SHA-256 hashes on download",
+    "Full audit logging of security events",
+    "Admin dashboard for user, file, share, and security monitoring"
+  ],
+  "category": "productivity",
+  "tags": [
+    "file-sharing",
+    "security",
+    "encryption",
+    "access-control"
+  ],
+  "last_updated": "2026-09-03T08:56:47.832Z"
+}
