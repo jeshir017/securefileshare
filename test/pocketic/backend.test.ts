@@ -35,6 +35,16 @@ it("answers an empty-state read instead of trapping", async () => {
   expect(await actor.getMyActivity()).toEqual([]);
 });
 
+it("returns a non-empty API documentation string without trapping", async () => {
+  // The getApiDoc text content is intentionally changing (raw em-dashes are
+  // being replaced with Motoko-legal escapes/ASCII), so this asserts only the
+  // stable contract: the query resolves and returns a non-empty doc string.
+  const doc = await actor.getApiDoc();
+  expect(typeof doc).toBe("string");
+  expect(doc.length).toBeGreaterThan(0);
+  expect(doc).toContain("Secure File Sharing System");
+});
+
 it("registers a user and rejects a weak password and a duplicate email", async () => {
   actor.setPrincipal(ALICE);
   await actor._initialize_access_control();

@@ -43346,13 +43346,20 @@ function AuthProvider({ children }) {
   const ii = useInternetIdentity();
   const { actor, isFetching: actorFetching } = useActor(createActor);
   const queryClient2 = useQueryClient();
+  const initializeAccessControl = reactExports.useCallback(async () => {
+    if (!actor) return;
+    try {
+      await actor._initialize_access_control();
+    } catch {
+    }
+  }, [actor]);
   const { data: user } = useQuery({
     queryKey: ["currentUser"],
     queryFn: async () => {
       if (!actor) return null;
       return actor.getCallerUser();
     },
-    enabled: !!actor && ii.isAuthenticated && !actorFetching
+    enabled: !!actor && !actorFetching
   });
   const { data: role } = useQuery({
     queryKey: ["currentUserRole"],
@@ -43360,7 +43367,7 @@ function AuthProvider({ children }) {
       if (!actor) return null;
       return actor.getCallerUserRole();
     },
-    enabled: !!actor && ii.isAuthenticated && !actorFetching
+    enabled: !!actor && !actorFetching
   });
   const registerMutation = useMutation({
     mutationFn: async ({ name, email, password }) => {
@@ -43370,6 +43377,7 @@ function AuthProvider({ children }) {
     onSuccess: (result) => {
       if (result.__kind__ === "ok") {
         ue.success("Account created successfully");
+        void initializeAccessControl();
         void queryClient2.invalidateQueries({ queryKey: ["currentUser"] });
         void queryClient2.invalidateQueries({ queryKey: ["currentUserRole"] });
       } else {
@@ -43385,6 +43393,7 @@ function AuthProvider({ children }) {
     onSuccess: (result) => {
       if (result.__kind__ === "ok") {
         ue.success(`Welcome back, ${result.ok.name}`);
+        void initializeAccessControl();
         void queryClient2.invalidateQueries({ queryKey: ["currentUser"] });
         void queryClient2.invalidateQueries({ queryKey: ["currentUserRole"] });
       } else {
@@ -43436,7 +43445,7 @@ function AuthProvider({ children }) {
   }, [logoutMutation]);
   const value = reactExports.useMemo(
     () => ({
-      isAuthenticated: ii.isAuthenticated,
+      isAuthenticated: !!user,
       isInitializing: ii.isInitializing,
       isLoggingIn: ii.isLoggingIn,
       identity: ii.identity,
@@ -43454,7 +43463,6 @@ function AuthProvider({ children }) {
       logoutPending: logoutMutation.isPending
     }),
     [
-      ii.isAuthenticated,
       ii.isInitializing,
       ii.isLoggingIn,
       ii.identity,

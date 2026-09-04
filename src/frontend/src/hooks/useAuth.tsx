@@ -63,13 +63,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { actor, isFetching: actorFetching } = useActor(createActor);
   const queryClient = useQueryClient();
 
+  // Register the signed-in caller into the access-control role map so
+  // user-gated operations (e.g. uploadFile) are authorized. The first caller
+  // becomes admin; subsequent callers become #user.
+  const initializeAccessControl = useCallback(async (): Promise<void> => {
+    if (!actor) return;
+    try {
+      await actor._initialize_access_control();
+    } catch {
+      // Role registration is best-effort; the next guarded call retries it.
+    }
+  }, [actor]);
+
   const { data: user } = useQuery<User | null>({
     queryKey: ["currentUser"],
     queryFn: async () => {
       if (!actor) return null;
       return actor.getCallerUser();
     },
-    enabled: !!actor && ii.isAuthenticated && !actorFetching,
+    enabled: !!actor && !actorFetching,
   });
 
   const { data: role } = useQuery<UserRole | null>({
@@ -78,7 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!actor) return null;
       return actor.getCallerUserRole();
     },
-    enabled: !!actor && ii.isAuthenticated && !actorFetching,
+    enabled: !!actor && !actorFetching,
   });
 
   const registerMutation = useMutation({
@@ -89,6 +101,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     onSuccess: (result) => {
       if (result.__kind__ === "ok") {
         toast.success("Account created successfully");
+        void initializeAccessControl();
         void queryClient.invalidateQueries({ queryKey: ["currentUser"] });
         void queryClient.invalidateQueries({ queryKey: ["currentUserRole"] });
       } else {
@@ -105,6 +118,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     onSuccess: (result) => {
       if (result.__kind__ === "ok") {
         toast.success(`Welcome back, ${result.ok.name}`);
+        void initializeAccessControl();
         void queryClient.invalidateQueries({ queryKey: ["currentUser"] });
         void queryClient.invalidateQueries({ queryKey: ["currentUserRole"] });
       } else {
@@ -161,7 +175,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<AuthContextValue>(
     () => ({
-      isAuthenticated: ii.isAuthenticated,
+      isAuthenticated: !!user,
       isInitializing: ii.isInitializing,
       isLoggingIn: ii.isLoggingIn,
       identity: ii.identity,
@@ -179,7 +193,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       logoutPending: logoutMutation.isPending,
     }),
     [
-      ii.isAuthenticated,
       ii.isInitializing,
       ii.isLoggingIn,
       ii.identity,

@@ -1,6 +1,6 @@
 mixin () {
   public query func getApiDoc() : async Text {
-    "# Secure File Sharing System — Backend API
+    "# Secure File Sharing System \u{2014} Backend API
 
 ## Purpose
 
@@ -8,7 +8,7 @@ The backend of the Secure File Sharing System lets registered users upload,
 store, share, and download files securely. It enforces role-based access
 control (normal user vs admin), hashes passwords, records audit events, and
 exposes its persisted data through an OQL query layer. The backend never stores
-raw file bytes or encryption keys — it keeps only metadata plus a reference to
+raw file bytes or encryption keys \u{2014} it keeps only metadata plus a reference to
 the encrypted blob held by the object-storage extension.
 
 ## Public methods
@@ -24,74 +24,74 @@ the encrypted blob held by the object-storage extension.
 - `login(email : Text, password : Text) : async Result<User, AuthError>`
   Authenticates by email (case-insensitive) and password. On failure records a
   failed login and returns `#err(#invalidCredentials)` or `#err(#accountDeactivated)`.
-- `logout() : async ()` — No-op. Sessions are managed client-side; the backend
+- `logout() : async ()` \u{2014} No-op. Sessions are managed client-side; the backend
   keeps no server-side session state.
-- `getCallerUser() : async ?User` — Returns the caller's user record, or `null`
+- `getCallerUser() : async ?User` \u{2014} Returns the caller's user record, or `null`
   if the caller is not registered.
-- `getCallerUserRole() : async UserRole` — Returns the caller's role
+- `getCallerUserRole() : async UserRole` \u{2014} Returns the caller's role
   (`#admin`, `#user`, or `#guest`). Anonymous callers get `#guest`. A signed-in
   caller who has not been registered traps with `\"User is not registered\"`.
-- `isCallerAdmin() : async Bool` — Whether the caller has the `#admin` role.
-- `assignCallerUserRole(user : Principal, role : UserRole) : async ()` —
+- `isCallerAdmin() : async Bool` \u{2014} Whether the caller has the `#admin` role.
+- `assignCallerUserRole(user : Principal, role : UserRole) : async ()` \u{2014}
   Admin-only. Assigns a role to a user. Non-admins trap with
   `\"Unauthorized: Only admins can assign user roles\"`.
 - `setAccountStatus(target : Principal, status : AccountStatus) : async Result<(), AuthError>`
-  — Admin-only. Activates or deactivates a user. Non-admins trap with
+  \u{2014} Admin-only. Activates or deactivates a user. Non-admins trap with
   `\"Unauthorized\"`. Returns `#err(#notRegistered)` if the target is not registered.
-- `_initialize_access_control() : async ()` — Registers the caller into the
+- `_initialize_access_control() : async ()` \u{2014} Registers the caller into the
   role map. The first signed-in caller to call this becomes `#admin`; every
   subsequent caller becomes `#user`. Anonymous callers are ignored.
 - `_internet_identity_sign_in_start() : async Blob` /
-  `_internet_identity_sign_in_finish() : async Result<(), Verify.Error>` —
+  `_internet_identity_sign_in_finish() : async Result<(), Verify.Error>` \u{2014}
   Internet Identity sign-in flow used by the frontend.
-- `listFailedLogins() : async [FailedLogin]` — Admin-only. Returns the recorded
+- `listFailedLogins() : async [FailedLogin]` \u{2014} Admin-only. Returns the recorded
   failed-login attempts keyed by principal. Non-admins trap with `\"Unauthorized\"`.
 
 ### Files
 
 - `uploadFile(originalFilename, storedFilename, mimeType, fileSize, sha256Hash, blob) : async FileView`
-  — Records a new file owned by the caller. Requires `#user` permission. The
+  \u{2014} Records a new file owned by the caller. Requires `#user` permission. The
   `blob` is the encrypted file bytes held by object storage; the backend stores
   only metadata and a reference. Each call creates a new file.
-- `listMyFiles() : async [FileView]` — Lists the caller's own files. Requires
+- `listMyFiles() : async [FileView]` \u{2014} Lists the caller's own files. Requires
   `#user` permission.
-- `downloadFile(id : FileId) : async ?Storage.ExternalBlob` — Returns the
+- `downloadFile(id : FileId) : async ?Storage.ExternalBlob` \u{2014} Returns the
   encrypted blob of the caller's own file, or `null` if not found. Requires
   `#user` permission; traps with `\"Unauthorized: You can only download your own files\"`
   if the file belongs to someone else.
-- `deleteFile(id : FileId) : async Bool` — Deletes the caller's own file.
+- `deleteFile(id : FileId) : async Bool` \u{2014} Deletes the caller's own file.
   Returns `true` if deleted, `false` if not found. Requires `#user` permission;
   traps with `\"Unauthorized: You can only delete your own files\"` if the file
   belongs to someone else.
 
 ### Sharing
 
-- `createShare(fileId, sharedWith, permission, expiresAt) : async ShareView` —
+- `createShare(fileId, sharedWith, permission, expiresAt) : async ShareView` \u{2014}
   Owner shares a file with another registered user, generating a cryptographically
   secure random share token (never exposing database IDs). Requires `#user`
   permission.
-- `listOwnerShares() : async [ShareView]` — Lists the caller's active (non-revoked)
+- `listOwnerShares() : async [ShareView]` \u{2014} Lists the caller's active (non-revoked)
   shared links. Requires `#user` permission.
-- `revokeShare(shareId) : async Bool` — Owner revokes a share. Returns `true` if
+- `revokeShare(shareId) : async Bool` \u{2014} Owner revokes a share. Returns `true` if
   revoked, `false` if the share is not found, not owned, or already revoked.
   Requires `#user` permission.
-- `listSharesForUser() : async [ShareView]` — Lists files shared with the caller
+- `listSharesForUser() : async [ShareView]` \u{2014} Lists files shared with the caller
   that are not revoked and not expired. Requires `#user` permission.
-- `checkDownloadAccess(shareId) : async Bool` — Whether the caller may download
+- `checkDownloadAccess(shareId) : async Bool` \u{2014} Whether the caller may download
   the file for a share: caller is the intended recipient, permission is
   `#download`, the share is not revoked, and it has not expired. Requires
   `#user` permission.
 
 ### Audit
 
-- `getMyActivity() : async [AuditLog]` — The caller's own audit events.
-- `getAllLogs() : async [AuditLog]` — All audit events.
-- `getFailedLogins() : async [FailedLogin]` — All recorded failed-login events.
+- `getMyActivity() : async [AuditLog]` \u{2014} The caller's own audit events.
+- `getAllLogs() : async [AuditLog]` \u{2014} All audit events.
+- `getFailedLogins() : async [FailedLogin]` \u{2014} All recorded failed-login events.
 
 ### OQL
 
-- `schema() : async Text` — The OQL schema describing the queryable entities.
-- `execute(query : Text) : async Text` — Runs an OQL query against the exposed
+- `schema() : async Text` \u{2014} The OQL schema describing the queryable entities.
+- `execute(query : Text) : async Text` \u{2014} Runs an OQL query against the exposed
   entities.
 
 ## Authentication and identity
@@ -145,7 +145,7 @@ principal than the one the frontend registered.
 Shares carry an optional `expiresAt`. `listSharesForUser` and
 `checkDownloadAccess` treat a share as expired when `now > expiresAt`; expired
 shares are excluded from the recipient's list and denied on download. There is
-no background expiry job — expiry is evaluated lazily at read time. There is no
+no background expiry job \u{2014} expiry is evaluated lazily at read time. There is no
 long-running async operation to poll; all methods return promptly.
 
 ## Mutation retry safety

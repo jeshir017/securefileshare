@@ -19,7 +19,18 @@ mixin (
     email : Text,
     password : Text,
   ) : async Result.Result<Types.User, Types.AuthError> {
-    AuthLib.register(users, caller, name, email, password)
+    let result = AuthLib.register(users, caller, name, email, password);
+    switch (result) {
+      case (#ok(_)) {
+        // Register the caller into the access-control role map so user-gated
+        // operations (uploadFile, listMyFiles, ...) are authorized regardless
+        // of frontend timing. The first caller becomes admin; later callers
+        // become #user.
+        AccessControl.initialize(accessControlState, caller);
+      };
+      case (#err(_)) {};
+    };
+    result
   };
 
   public shared ({ caller }) func login(
@@ -33,6 +44,10 @@ mixin (
         await AuditLib.recordEvent(logs, caller, #failedLogin, null, "", "failed login");
       };
       case (#ok(_)) {
+        // Ensure the caller is registered in the access-control role map so
+        // user-gated operations are authorized even if the frontend never
+        // called _initialize_access_control.
+        AccessControl.initialize(accessControlState, caller);
         await AuditLib.recordEvent(logs, caller, #login, null, "", "login");
       };
     };

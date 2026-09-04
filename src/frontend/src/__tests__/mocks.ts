@@ -71,6 +71,7 @@ export interface MockActor {
   listOwnerShares: ReturnType<typeof vi.fn>;
   listSharesForUser: ReturnType<typeof vi.fn>;
   getMyActivity: ReturnType<typeof vi.fn>;
+  uploadFile: ReturnType<typeof vi.fn>;
   downloadFile: ReturnType<typeof vi.fn>;
   deleteFile: ReturnType<typeof vi.fn>;
   checkDownloadAccess: ReturnType<typeof vi.fn>;
@@ -96,6 +97,7 @@ export function createMockActor(overrides: Partial<MockActor> = {}): MockActor {
     listOwnerShares: vi.fn().mockResolvedValue([]),
     listSharesForUser: vi.fn().mockResolvedValue([]),
     getMyActivity: vi.fn().mockResolvedValue([]),
+    uploadFile: vi.fn().mockResolvedValue(sampleFile),
     downloadFile: vi.fn().mockResolvedValue(null),
     deleteFile: vi.fn().mockResolvedValue(false),
     checkDownloadAccess: vi.fn().mockResolvedValue(false),
